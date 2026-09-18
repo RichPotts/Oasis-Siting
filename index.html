@@ -1,0 +1,596 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Oasis Siting</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="theme-color" content="#0B4EA2">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Overpass:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --sign:#0B4EA2; --sign-ink:#fff;
+  --bg:#ECEFF2; --panel:#fff; --ink:#15202B; --muted:#55616D; --line:#C9D1D9;
+  --ev:#127A4B; --ev-bg:#E2F3EA; --amber:#9A5B00; --amber-bg:#FCEFD6; --stop:#B3261E; --stop-bg:#FBE4E2;
+  --opp:#0B4EA2; --opp-bg:#E3ECF8; --bay:#9AA5B0; --unit:#0B4EA2;
+  --display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --body:"Overpass","Segoe UI",Helvetica,Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --sign:#0B4EA2; --bg:#16191D; --panel:#20252B; --ink:#E8ECF0; --muted:#A0ABB6; --line:#3A424B;
+    --ev:#5FD39A; --ev-bg:#15301F; --amber:#F2B450; --amber-bg:#3A2A0C; --stop:#FF8A80; --stop-bg:#3B1614;
+    --opp:#8DB8F2; --opp-bg:#14263F; --bay:#66717D; --unit:#8DB8F2;
+  }
+}
+:root[data-theme="dark"]{
+  --sign:#0B4EA2; --bg:#16191D; --panel:#20252B; --ink:#E8ECF0; --muted:#A0ABB6; --line:#3A424B;
+  --ev:#5FD39A; --ev-bg:#15301F; --amber:#F2B450; --amber-bg:#3A2A0C; --stop:#FF8A80; --stop-bg:#3B1614;
+  --opp:#8DB8F2; --opp-bg:#14263F; --bay:#66717D; --unit:#8DB8F2;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 1rem/1.5 var(--body)}
+header{background:var(--sign);color:var(--sign-ink);padding:1.5rem 1.25rem}
+.wrap{max-width:68rem;margin:0 auto}
+.brand{display:flex;gap:1rem;align-items:center}
+.pmark{flex:none;width:4rem;height:4rem;border:.25rem solid #fff;border-radius:.5rem;display:grid;place-items:center;font:700 3.2rem/1 var(--display)}
+h1{font:600 2.4rem/1 var(--display);margin:0 0 .3rem;letter-spacing:.005em}
+header p{margin:0;max-width:46rem;opacity:.92}
+main{padding:1.25rem}
+section.step{background:var(--panel);border:1px solid var(--line);border-radius:.4rem;margin:0 auto 1.25rem;padding:1.25rem;max-width:68rem}
+.stephead{display:flex;gap:.9rem;align-items:baseline;margin-bottom:.75rem}
+.num{font:700 2.6rem/1 var(--display);color:var(--sign)}
+:root[data-theme="dark"] .num{color:var(--opp)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .num{color:var(--opp)}}
+h2{font:600 1.7rem/1.1 var(--display);margin:0}
+h3{font:600 1.25rem/1.2 var(--display);margin:1.25rem 0 .5rem}
+.lede{color:var(--muted);margin:.1rem 0 1rem;max-width:44rem}
+label{display:block;font-weight:600;font-size:.9rem;margin-bottom:.2rem}
+input,select,textarea{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:.3rem;padding:.5rem .6rem}
+input:focus,select:focus,textarea:focus,button:focus-visible,a:focus-visible{outline:3px solid #F2B450;outline-offset:1px}
+.grid{display:grid;gap:.9rem;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr))}
+.row{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.8rem;align-items:center}
+button,.btn{font:600 .95rem var(--body);border:1px solid var(--sign);background:var(--sign);color:#fff;border-radius:.3rem;padding:.55rem .9rem;cursor:pointer;text-decoration:none;display:inline-block}
+button.ghost,.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+button.small{padding:.3rem .6rem;font-size:.85rem}
+button:disabled{opacity:.5;cursor:default}
+.hint{font-size:.85rem;color:var(--muted);margin:.25rem 0 0}
+.ok{color:var(--ev);font-weight:600}.bad{color:var(--stop);font-weight:600}
+table{border-collapse:collapse;width:100%;min-width:40rem}
+th,td{text-align:left;padding:.55rem .6rem;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:.85rem;color:var(--muted);font-weight:600}
+.scroll{overflow-x:auto}
+tr.sel td{background:var(--opp-bg)}
+.links a{margin-right:.7rem;white-space:nowrap;color:var(--opp)}
+fieldset{border:1px solid var(--line);border-radius:.3rem;padding:.9rem;margin:0 0 1rem;min-width:0}
+legend{font:600 1.15rem var(--display);padding:0 .4rem}
+.verdict{display:flex;flex-wrap:wrap;gap:1rem;align-items:center;padding:1rem;border-radius:.3rem;border-left:.5rem solid var(--muted);background:var(--bg)}
+.verdict.good{border-color:var(--ev)}.verdict.mid{border-color:var(--amber)}.verdict.poor,.verdict.block{border-color:var(--stop)}
+.score{font:700 3rem/1 var(--display)}
+.verdict strong{font:600 1.4rem var(--display);display:block}
+.swot{display:grid;gap:.9rem;grid-template-columns:repeat(auto-fit,minmax(18rem,1fr));margin-top:1rem}
+.q{border-radius:.3rem;padding:.9rem 1rem;border-top:.35rem solid}
+.q h4{font:600 1.3rem var(--display);margin:0 0 .4rem}
+.q ul{margin:0;padding-left:1.1rem}.q li{margin:.3rem 0}
+.q.s{background:var(--ev-bg);border-color:var(--ev)}.q.w{background:var(--amber-bg);border-color:var(--amber)}
+.q.o{background:var(--opp-bg);border-color:var(--opp)}.q.t{background:var(--stop-bg);border-color:var(--stop)}
+.q li.ai{font-style:italic}
+.empty{color:var(--muted);padding:1rem;border:1px dashed var(--line);border-radius:.3rem}
+.plan svg{display:block}
+.note{background:var(--amber-bg);border-left:.3rem solid var(--amber);padding:.7rem .9rem;border-radius:.2rem;font-size:.92rem;margin:.8rem 0}
+.aiout{white-space:pre-wrap}
+footer{max-width:68rem;margin:0 auto;padding:0 1.25rem 2rem;color:var(--muted);font-size:.85rem}
+@media (max-width:40rem){h1{font-size:1.9rem}.pmark{width:3.2rem;height:3.2rem;font-size:2.5rem}}
+.cand{border:1px solid var(--line);border-left:.4rem solid var(--bay);border-radius:.3rem;padding:1rem;margin-bottom:.9rem}
+.cand.sel{border-left-color:var(--sign);background:var(--opp-bg)}
+.chead{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.5rem 1rem;align-items:baseline}
+.chead h3{margin:0}.cscore{font:600 1.2rem var(--display)}
+.tag{display:inline-block;font-size:.78rem;font-weight:600;padding:.1rem .45rem;border-radius:.2rem;background:var(--amber-bg);color:var(--amber);margin-left:.4rem;vertical-align:middle}
+.tag.pub{background:var(--opp-bg);color:var(--opp)}
+.tag.near{background:var(--ev-bg);color:var(--ev)}
+.cand p{margin:.35rem 0}.cand details{margin:.6rem 0}.cand summary{cursor:pointer;font-weight:600}
+.aerial{width:100%;max-width:40rem;height:18rem;border:1px solid var(--line);border-radius:.3rem;display:block;margin:.6rem 0;background:var(--bg)}
+img.sv{width:100%;max-width:40rem;height:auto;border-radius:.3rem;display:block;margin:.6rem 0}
+.views{display:grid;gap:.8rem;grid-template-columns:repeat(auto-fit,minmax(17rem,1fr))}
+.chk{display:flex;gap:.5rem;align-items:center;font-weight:600;margin-top:.9rem}.chk input{width:1.1rem;height:1.1rem}
+.zap{background:var(--ev-bg);border-left:.3rem solid var(--ev);padding:.5rem .8rem;border-radius:.2rem;margin:.5rem 0}
+</style>
+</head>
+<body>
+<header><div class="wrap brand">
+  <div class="pmark" aria-hidden="true">P</div>
+  <div><h1>Oasis Siting</h1>
+  <p>Find a public car park near your contract site, check a 40ft Oasis unit can be delivered and plugged into the charge points there, and produce a SWOT for the location.</p></div>
+</div></header>
+
+<main>
+<section class="step" id="s1">
+  <div class="stephead"><span class="num">1</span><h2>Contract site</h2></div>
+  <p class="lede">Type the nearest town or village, or the first part of the postcode. The app looks up public car parks and EV charge points around it on the live map, nearest first, each with an aerial image and a first-pass SWOT.</p>
+  <div class="grid">
+    <div><label for="place">Nearest town, village or part postcode</label><input id="place" placeholder="e.g. Hexham, or NE46"></div>
+    <div><label for="siteName">Contract or site name</label><input id="siteName" placeholder="e.g. Town Hall roof replacement"></div>
+    <div><label for="radius">Search radius</label><select id="radius"><option value="500">500 m</option><option value="1000">1 km</option><option value="2000" selected>2 km</option><option value="5000">5 km</option></select></div>
+  </div>
+  <label class="chk" for="evOnly"><input type="checkbox" id="evOnly"> Only show car parks with EV charge points on site</label>
+  <label class="chk" for="pubOnly" style="margin-top:.4rem"><input type="checkbox" id="pubOnly"> Only show public sector sites (council, NHS, emergency services)</label>
+  <p class="hint">Public sector sites are always listed first, because permission is simpler when the land is already in public control.</p>
+  <div class="row"><button id="findBtn">Find car parks near here</button><button class="ghost" id="findStop" hidden>Stop</button><button class="ghost" id="geoBtn">Use my current location instead</button></div>
+  <p class="hint" id="placeMsg"></p>
+  <details style="margin-top:.8rem"><summary>I have exact coordinates for the contract site</summary>
+    <div style="max-width:28rem;margin-top:.5rem"><label for="siteCoord">Site coordinates from Google Earth or Maps</label><input id="siteCoord" placeholder="51.5033, -0.1196  or  51°30'11.9&quot;N 0°07'10.6&quot;W"><p class="hint" id="siteCoordMsg"></p></div>
+  </details>
+  <div class="row links" id="siteLinks"></div>
+</section>
+
+<section class="step" id="s2">
+  <div class="stephead"><span class="num">2</span><h2>Candidate car parks</h2></div>
+  <p class="lede">Nearest first, from OpenStreetMap. Details filled in from the map are marked so you can confirm them. You can also add a car park yourself.</p>
+  <div id="candList"></div>
+  <h3>Add a car park yourself</h3>
+  <div class="grid">
+    <div><label for="cName">Car park name</label><input id="cName" placeholder="e.g. Castle Street long stay"></div>
+    <div><label for="cCoord">Car park coordinates</label><input id="cCoord" placeholder="Paste from Google Earth"><p class="hint" id="cMsg"></p></div>
+  </div>
+  <div class="row"><button id="addBtn">Add car park</button></div>
+  
+</section>
+
+<section class="step" id="s3">
+  <div class="stephead"><span class="num">3</span><h2>Site survey</h2></div>
+  <div id="surveyBody"></div>
+</section>
+
+<section class="step" id="s4">
+  <div class="stephead"><span class="num">4</span><h2>SWOT analysis</h2></div>
+  <div id="swotBody"></div>
+</section>
+
+<section class="step" id="s5">
+  <div class="stephead"><span class="num">5</span><h2>Unit and delivery assumptions</h2></div>
+  <p class="lede">These drive the pass and fail checks. Change them to match your unit and haulier.</p>
+  <div class="grid" id="unitForm"></div>
+  <div style="max-width:30rem;margin-top:1rem"><label for="gkey">Google Maps API key (optional)</label><input id="gkey" autocomplete="off" placeholder="Adds a Street View photo to each car park"><p class="hint">Needs the Street View Static API switched on in your Google Cloud account. The key is stored only in this browser. Without it, Street View opens as a link.</p></div>
+  <div style="max-width:30rem;margin-top:1rem"><label for="ocmKey">Open Charge Map API key (optional override)</label><input id="ocmKey" autocomplete="off" placeholder="A shared key is already built in"><p class="hint">Every search already cross-checks Open Charge Map, one of the sources Zapmap itself draws on, using a built-in key. Enter your own key here only if the shared one stops working.</p></div>
+  <div class="row"><button class="ghost" id="resetBtn">Clear all saved data on this device</button></div>
+</section>
+</main>
+<footer>Distances are straight-line. Walking time assumes a route 30% longer than the straight line at 80 m per minute. Your entries are saved in this browser only. Car park and charge point data © OpenStreetMap contributors (ODbL). Postcode lookup by postcodes.io. Place lookup by Nominatim. Aerial imagery by Google. Charge point cross-check by Open Charge Map where a key is set. Version 8 (web).</footer>
+
+<script>
+(function(){
+"use strict";
+var KEY="oasis-siting-v1",OCM_DEFAULT="3be8ab12-5e62-404c-bd0a-e43d6a6f0689";function ocmKey(){return state.ocmKey||OCM_DEFAULT;}
+var DEF_UNIT={length:12.19,width:2.44,clearance:4.5,minEntrance:3.5,connector:"Type 2 (AC)",minKw:7,maxCable:10,bayW:2.4,bayD:4.8};
+var state={site:{name:"",place:"",est:false,coord:"",lat:null,lng:null,radius:2000},cands:[],sel:null,unit:Object.assign({},DEF_UNIT)};
+try{var raw=localStorage.getItem(KEY);if(raw){var p=JSON.parse(raw);if(p&&p.site){state=p;state.unit=Object.assign({},DEF_UNIT,p.unit||{});}}}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+function $(id){return document.getElementById(id);}
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
+var sample=null,downloads=null,ai={};
+
+/* ---------- coordinates ---------- */
+function parseCoord(t){
+  if(!t)return null;t=String(t).trim();var m;
+  m=t.match(/@(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/)||t.match(/[?&](?:q|ll|query|viewpoint)=(-?\d+(?:\.\d+)?)(?:,|%2C)(-?\d+(?:\.\d+)?)/i);
+  if(m)return chk(+m[1],+m[2]);
+  var dms=/(\d{1,3})\s*[°d:\s]\s*(\d{1,2})\s*['′m:\s]\s*(\d{1,2}(?:\.\d+)?)\s*(?:["″s]|'')?\s*([NSEW])/gi,parts=[],x;
+  while((x=dms.exec(t)))parts.push(x);
+  if(parts.length===2){var v={};parts.forEach(function(q){var d=+q[1]+(+q[2])/60+(+q[3])/3600,h=q[4].toUpperCase();if(h==="S"||h==="W")d=-d;v[(h==="N"||h==="S")?"lat":"lng"]=d;});if(v.lat!=null&&v.lng!=null)return chk(v.lat,v.lng);}
+  m=t.match(/(-?\d+(?:\.\d+)?)\s*°?\s*([NS])?[\s,;]+(-?\d+(?:\.\d+)?)\s*°?\s*([EW])?/i);
+  if(m){var la=+m[1],lo=+m[3];if(m[2]&&m[2].toUpperCase()==="S")la=-Math.abs(la);if(m[4]&&m[4].toUpperCase()==="W")lo=-Math.abs(lo);return chk(la,lo);}
+  return null;
+}
+function chk(la,lo){return(isFinite(la)&&isFinite(lo)&&Math.abs(la)<=90&&Math.abs(lo)<=180)?{lat:la,lng:lo}:null;}
+function fmt(c){return c.lat.toFixed(6)+", "+c.lng.toFixed(6);}
+function dist(a,b){var R=6371000,r=Math.PI/180,dL=(b.lat-a.lat)*r,dG=(b.lng-a.lng)*r,s=Math.sin(dL/2)*Math.sin(dL/2)+Math.cos(a.lat*r)*Math.cos(b.lat*r)*Math.sin(dG/2)*Math.sin(dG/2);return 2*R*Math.asin(Math.sqrt(s));}
+function bearing(a,b){var r=Math.PI/180,y=Math.sin((b.lng-a.lng)*r)*Math.cos(b.lat*r),x=Math.cos(a.lat*r)*Math.sin(b.lat*r)-Math.sin(a.lat*r)*Math.cos(b.lat*r)*Math.cos((b.lng-a.lng)*r),d=(Math.atan2(y,x)/r+360)%360;return["north","north-east","east","south-east","south","south-west","west","north-west"][Math.round(d/45)%8];}
+function distTxt(m){return m<1000?Math.round(m)+" m":(m/1000).toFixed(2)+" km";}
+function walkMin(m){return Math.max(1,Math.round(m*1.3/80));}
+function zoomFor(r){return r<=500?16:r<=1000?15:r<=2000?14:13;}
+function earth(c,d){return"https://earth.google.com/web/@"+c.lat+","+c.lng+",0a,"+(d||500)+"d,35y,0h,0t,0r";}
+function mapsSearch(q,c,r){return"https://www.google.com/maps/search/"+encodeURIComponent(q)+"/@"+c.lat+","+c.lng+","+zoomFor(r)+"z";}
+function street(c){return"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint="+c.lat+","+c.lng;}
+function route(a,b,mode){return"https://www.google.com/maps/dir/?api=1&origin="+a.lat+","+a.lng+"&destination="+b.lat+","+b.lng+"&travelmode="+mode;}
+function earthQ(q){return"https://earth.google.com/web/search/"+encodeURIComponent(q);}
+function mapsQ(q){return"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(q);}
+function sat(c){return"https://www.google.com/maps/@"+c.lat+","+c.lng+",200m/data=!3m1!1e3";}
+function A(h,t){return'<a href="'+esc(h)+'" target="_blank" rel="noopener">'+esc(t)+"</a>";}
+function siteC(){return state.site.lat!=null?{lat:state.site.lat,lng:state.site.lng}:null;}
+
+/* ---------- step 1 ---------- */
+function renderSite(){
+  var c=siteC(),el=$("siteLinks"),msg=$("siteCoordMsg"),pl=state.site.place,r=state.site.radius;
+  if(!c){msg.textContent=state.site.coord?"Those coordinates could not be read. Try the form 51.5033, -0.1196.":"";msg.className="hint"+(state.site.coord?" bad":"");
+    el.innerHTML=pl?'<a class="btn ghost" target="_blank" rel="noopener" href="'+esc(mapsQ("public car park near "+pl))+'">Search car parks in Google Maps</a><a class="btn ghost" target="_blank" rel="noopener" href="'+esc(mapsQ("EV charging station near "+pl))+'">Search EV charge points</a>':"";return;}
+  msg.className="hint "+(state.site.est?"":"ok");msg.textContent=(state.site.est?"Approximate centre estimated by Claude: ":"Read as ")+fmt(c);
+  el.innerHTML='<a class="btn ghost" target="_blank" rel="noopener" href="'+esc(mapsSearch("public car park",c,r))+'">Search car parks in Google Maps</a>'+
+    '<a class="btn ghost" target="_blank" rel="noopener" href="'+esc(mapsSearch("EV charging station",c,r))+'">Search EV charge points</a>'+
+    '<a class="btn ghost" target="_blank" rel="noopener" href="'+esc(earth(c,r*2))+'">Open area in Google Earth</a>';
+}
+$("siteName").value=state.site.name;$("place").value=state.site.place||"";$("place").oninput=function(){state.site.place=this.value;save();renderSite();};$("siteCoord").value=state.site.coord;$("radius").value=String(state.site.radius);
+$("siteName").oninput=function(){state.site.name=this.value;save();};
+$("radius").onchange=function(){state.site.radius=+this.value;save();renderAll();};
+function setSiteCoord(t,est){state.site.est=!!est;state.site.coord=t;var c=parseCoord(t);state.site.lat=c?c.lat:null;state.site.lng=c?c.lng:null;save();renderAll();}
+$("siteCoord").oninput=function(){setSiteCoord(this.value);};
+$("geoBtn").onclick=function(){
+  var m=$("placeMsg");if(!navigator.geolocation){m.textContent="Location is not available in this browser. Paste coordinates instead.";return;}
+  m.textContent="Finding your position…";
+  navigator.geolocation.getCurrentPosition(function(p){var t=p.coords.latitude.toFixed(6)+", "+p.coords.longitude.toFixed(6);$("siteCoord").value=t;setSiteCoord(t);m.textContent="Position set, accurate to about "+Math.round(p.coords.accuracy)+" m.";},
+    function(){m.textContent="Location was blocked or unavailable here. Paste coordinates from Google Earth instead.";},{enableHighAccuracy:true,timeout:10000});
+};
+var findCtl=null,tickBase="",tickT=null;
+function tickStart(){var t0=Date.now();tickT=setInterval(function(){$("placeMsg").textContent=tickBase+"… "+Math.round((Date.now()-t0)/1000)+" s";},1000);}
+function tickStop(){clearInterval(tickT);}
+$("findStop").onclick=function(){if(findCtl)findCtl.abort();};
+async function getJSON(url,opt,ms){
+  opt=opt||{};var ctl=new AbortController(),outer=opt.signal,timedOut=false,onAbort=function(){ctl.abort();};
+  if(outer){if(outer.aborted)ctl.abort();else outer.addEventListener("abort",onAbort);}
+  var timer=setTimeout(function(){timedOut=true;ctl.abort();},ms||12000);
+  try{var r=await fetch(url,Object.assign({},opt,{signal:ctl.signal}));if(!r.ok)throw new Error("HTTP "+r.status);return await r.json();}
+  catch(e){if(timedOut){var te=new Error("timeout");te.name="TimeoutError";throw te;}throw e;}
+  finally{clearTimeout(timer);if(outer)outer.removeEventListener("abort",onAbort);}
+}
+async function geocode(q,sig){
+  var t=q.replace(/\s+/g,"").toUpperCase(),kind=/^[A-Z]{1,2}\d[A-Z\d]?\d[A-Z]{2}$/.test(t)?"postcodes":/^[A-Z]{1,2}\d[A-Z\d]?$/.test(t)?"outcodes":null;
+  if(kind){try{var d=await getJSON("https://api.postcodes.io/"+kind+"/"+t,{signal:sig});if(d&&d.result&&d.result.latitude!=null)return{lat:d.result.latitude,lng:d.result.longitude,label:t+(d.result.admin_district?" ("+[].concat(d.result.admin_district)[0]+")":"")};}catch(e){if(e.name==="AbortError")throw e;}}
+  var n=await getJSON("https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&countrycodes=gb&q="+encodeURIComponent(q),{signal:sig});
+  if(n&&n[0])return{lat:+n[0].lat,lng:+n[0].lon,label:n[0].display_name.split(",").slice(0,3).join(",")};
+  return null;
+}
+async function overpass(query,sig){
+  var eps=["https://overpass-api.de/api/interpreter","https://overpass.private.coffee/api/interpreter","https://overpass.kumi.systems/api/interpreter","https://maps.mail.ru/osm/tools/overpass/api/interpreter"];
+  var tries=eps.map(function(u){return getJSON(u,{method:"POST",body:"data="+encodeURIComponent(query),headers:{"Content-Type":"application/x-www-form-urlencoded"},signal:sig},20000).then(function(d){if(!d||!Array.isArray(d.elements))throw new Error("bad reply");return d;});});
+  try{return await Promise.any(tries);}catch(e){if(sig&&sig.aborted){var ae=new Error("stopped");ae.name="AbortError";throw ae;}throw e;}
+}
+function wait(ms){return new Promise(function(r){setTimeout(r,ms);});}
+async function nominatimNear(kind,ctr,R,sig){
+  var dLat=R/111320,dLng=R/(111320*Math.cos(ctr.lat*Math.PI/180)),vb=[ctr.lng-dLng,ctr.lat+dLat,ctr.lng+dLng,ctr.lat-dLat].join(",");
+  var rows=await getJSON("https://nominatim.openstreetmap.org/search?format=jsonv2&limit=40&bounded=1&extratags=1&viewbox="+vb+"&q="+encodeURIComponent("["+kind+"]"),{signal:sig},15000);
+  return(rows||[]).map(function(r){var t=Object.assign({},r.extratags||{});t.amenity=kind;if(r.name)t.name=r.name;var bb=r.boundingbox||[],e={type:r.osm_type||"node",id:r.osm_id,tags:t};
+    if(r.osm_type!=="node"&&bb.length===4)e.bounds={minlat:+bb[0],maxlat:+bb[1],minlon:+bb[2],maxlon:+bb[3]};else{e.lat=+r.lat;e.lon=+r.lon;}return e;})
+    .filter(function(e){return!/^(private|customers|permit|no|employees|delivery|residents)$/.test(e.tags.access||"")&&!/^(street_side|lane|on_kerb|half_on_kerb|layby)$/.test(e.tags.parking||"");});
+}
+async function ocmNear(ctr,R,sig){
+  var rows=await getJSON("https://api.openchargemap.io/v3/poi/?output=json&countrycode=GB&maxresults=300&verbose=false&latitude="+ctr.lat+"&longitude="+ctr.lng+"&distance="+(R/1000).toFixed(2)+"&distanceunit=KM&key="+encodeURIComponent(ocmKey()),{signal:sig},15000);
+  return(rows||[]).filter(function(r){return r&&r.AddressInfo&&r.AddressInfo.Latitude!=null&&(!r.StatusType||r.StatusType.IsOperational!==false);}).map(function(r){
+    var t={amenity:"charging_station"},q=0,kw=0;(r.Connections||[]).forEach(function(c){q+=c.Quantity>0?c.Quantity:1;if(c.PowerKW>kw)kw=c.PowerKW;var id=c.ConnectionTypeID;
+      if(id===25)t["socket:type2"]="yes";if(id===1036)t["socket:type2_cable"]="yes";if(id===33||id===2)t["socket:type2_combo"]="yes";});
+    t.capacity=String(r.NumberOfPoints>0?r.NumberOfPoints:(q||1));if(kw)t["socket:any:output"]=kw+" kW";if(r.OperatorInfo&&r.OperatorInfo.Title&&!/unknown/i.test(r.OperatorInfo.Title))t.network=r.OperatorInfo.Title;
+    if(r.UsageType&&/private|restricted/i.test(r.UsageType.Title||""))t.restricted="yes";
+    return{type:"ocm",id:r.ID,src:"ocm",lat:r.AddressInfo.Latitude,lon:r.AddressInfo.Longitude,tags:t};});
+}
+var PUBRE=/council|borough|county|district|city of|corporation|parish|nhs|hospital|health|fire|police|ambulance|constabulary|universit|college/i;
+var HOSTS={townhall:["council offices","la"],library:["library","la"],community_centre:["community centre","la"],courthouse:["court building","pb"],hospital:["hospital","nhs"],clinic:["health clinic","nhs"],doctors:["GP surgery","gp"],fire_station:["fire station","blue"],police:["police station","blue"],ambulance_station:["ambulance station","blue"],sports_centre:["leisure centre","leis"],swimming_pool:["swimming pool","leis"],government:["government office","la"]};
+function hostKind(t){if(t.amenity==="parking"||t.amenity==="charging_station")return null;var k=HOSTS[t.amenity]||(t.emergency==="ambulance_station"&&HOSTS.ambulance_station)||HOSTS[t.leisure]||(t.office==="government"&&HOSTS.government);return k?{label:k[0],grp:k[1]}:null;}
+function boxDist(c,e){if(!e.bounds)return dist(c,{lat:e.lat,lng:e.lon});var b=e.bounds,la=Math.min(Math.max(c.lat,b.minlat),b.maxlat),lo=Math.min(Math.max(c.lng,b.minlon),b.maxlon);return dist(c,{lat:la,lng:lo});}
+function elC(e){return e.bounds?{lat:(e.bounds.minlat+e.bounds.maxlat)/2,lng:(e.bounds.minlon+e.bounds.maxlon)/2}:{lat:e.lat,lng:e.lon};}
+function elArea(e){if(!e.bounds)return null;var b=e.bounds;return dist({lat:b.minlat,lng:b.minlon},{lat:b.maxlat,lng:b.minlon})*dist({lat:b.minlat,lng:b.minlon},{lat:b.minlat,lng:b.maxlon});}
+function fromOSM(e,chargers,q,host){
+  var t=e.tags||{},c=elC(e),sv={},why=[],area=elArea(e);
+  var pk={surface:"Surface","multi-storey":"Multi-storey or deck",rooftop:"Multi-storey or deck",underground:"Underground"}[t.parking];if(pk)sv.type=pk;
+  if(t.maxheight&&parseFloat(t.maxheight)<state.unit.clearance){sv.barrier="Fixed";why.push("Height limit of "+t.maxheight+" m is mapped.");}
+  var sf=t.surface||"";if(/asphalt|concrete|^paved/.test(sf))sv.surface="Tarmac or concrete";else if(/paving_stones|sett|cobble/.test(sf))sv.surface="Block paving";else if(/gravel|compacted|unpaved|ground|dirt/.test(sf))sv.surface="Gravel or unbound";else if(/grass/.test(sf))sv.surface="Grass or soft ground";
+  if(t.lit==="yes")sv.lighting="Good";if(t.lit==="no")sv.lighting="None";
+  if(t.opening_hours==="24/7")sv.hours="Open 24 hours";
+  var op=t.operator||t.owner||"";if(op){sv.owner=/council|borough|county|district|city of|corporation|parish/i.test(op)?"Local authority":/nhs|hospital|universit|college|police/i.test(op)?"NHS or other public body":"Private operator";why.push("Run by "+op+".");}
+  var pub=false,grp="";if(host){pub=true;grp=host.kind.grp;why.unshift("Car park at "+host.name+" ("+host.kind.label+").");if(!sv.owner)sv.owner=(grp==="la"||grp==="leis")?"Local authority":"NHS or other public body";}
+  else if(sv.owner&&sv.owner!=="Private operator")pub=true;
+  if(/^(private|customers|permit|employees|destination)$/.test(t.access||""))why.push("Mapped as "+t.access+" parking, so it needs the occupier's agreement rather than a public bay suspension.");
+  if(t.capacity)why.push(t.capacity+" spaces.");else if(area)why.push("Roughly "+Math.round(area/100)*100+" m² on the map.");
+  if(t.fee)why.push(t.fee==="no"?"Free to park.":"Pay to park.");
+  var near=chargers.filter(function(ch){var cc=elC(ch);if(e.bounds){var m=0.0004;return cc.lat>=e.bounds.minlat-m&&cc.lat<=e.bounds.maxlat+m&&cc.lng>=e.bounds.minlon-m*1.6&&cc.lng<=e.bounds.maxlon+m*1.6;}return dist(c,cc)<=70;});
+  if(near.length){var cnt={osm:0,ocm:0},kw=0,t2=false,t2c=false,dc=false,net="";
+    near.forEach(function(ch){var g=ch.tags||{};cnt[ch.src==="ocm"?"ocm":"osm"]+=parseInt(g.capacity,10)>0?parseInt(g.capacity,10):1;net=net||g.network||g.operator||g.brand||"";
+      Object.keys(g).forEach(function(k){if(/^socket:[^:]+:output$/.test(k)){var v=parseFloat(g[k]);if(v>kw)kw=v;}if(/^socket:type2(:|$)/.test(k))t2=true;if(/^socket:type2_cable/.test(k))t2c=true;if(/^socket:(type2_combo|chademo)/.test(k))dc=true;});});
+    var n=Math.max(cnt.osm,cnt.ocm),both=cnt.osm>0&&cnt.ocm>0;
+    sv.chargers=String(n);if(kw)sv.kw=String(kw);sv.connector=t2?"Type 2 socket (AC)":t2c?"Type 2 tethered (AC)":dc?"CCS (DC rapid)":"Unknown";if(net)sv.network=net.slice(0,60);
+    if(near.some(function(ch){return(ch.tags||{}).opening_hours==="24/7";}))sv.evAccess="24 hours";
+    if(near.every(function(ch){var g=ch.tags||{};return/^(private|customers|permit|no)$/.test(g.access||"")||g.restricted==="yes";})||grp==="blue")sv.evAccess="Restricted or members only";
+    why.push(n+" charge point"+(n>1?"s":"")+" here"+(net?" ("+net+")":"")+", "+(both?"confirmed by both OpenStreetMap and Open Charge Map.":"listed on "+(cnt.ocm?"Open Charge Map":"OpenStreetMap")+" only."));
+  }else{var best=null;chargers.forEach(function(ch){var d=dist(c,elC(ch));if(best==null||d<best)best=d;});why.push("No charge point is mapped in this car park"+(best!=null?"; the nearest mapped one is "+distTxt(best)+" away":"")+". Check on site or with the charging networks.");}
+  return{id:"o"+e.type[0]+e.id,name:(t.name||"Unnamed car park"+(t["addr:street"]?", "+t["addr:street"]:"")).slice(0,80),lat:c.lat,lng:c.lng,est:false,src:"osm",why:why.join(" "),place:q,guess:Object.keys(sv),survey:sv,hasEv:near.length>0,pub:pub,host:host?host.name:"",hostLabel:host?host.kind.label:"",grp:grp};
+}
+$("findBtn").onclick=async function(){
+  var q=$("place").value.trim(),m=$("placeMsg"),btn=this;if(!q){m.textContent="Type a town, village or part postcode first.";return;}
+  btn.disabled=true;$("findStop").hidden=false;findCtl=new AbortController();var sig=findCtl.signal;
+  try{
+    tickBase="Looking up "+q;m.textContent=tickBase+"…";tickStart();
+    var ctr=(state.site.lat!=null&&!state.site.est)?siteC():null;
+    if(!ctr){var g=await geocode(q,sig);if(!g){tickStop();m.textContent="That place could not be found. Check the spelling or try the first half of the postcode.";return;}ctr=g;var t=fmt(g);$("siteCoord").value=t;setSiteCoord(t,true);}
+    var R=state.site.radius;tickBase="Searching the map for car parks and charge points within "+distTxt(R);
+    var a="(around:"+R+","+ctr.lat+","+ctr.lng+")",a2="(around:"+(R+300)+","+ctr.lat+","+ctr.lng+")";
+    var d,backup=false;try{d=await overpass('[out:json][timeout:20];(nwr["amenity"="parking"]["access"!="no"]["parking"!~"^(street_side|lane|on_kerb|half_on_kerb|layby)$"]'+a+';nwr["amenity"="charging_station"]'+a2+';nwr["amenity"~"^(townhall|hospital|clinic|doctors|fire_station|police|library|community_centre|courthouse)$"]'+a2+';nwr["emergency"="ambulance_station"]'+a2+';nwr["leisure"~"^(sports_centre|swimming_pool)$"]'+a2+';nwr["office"="government"]'+a2+';);out tags bb;',sig);}
+    catch(e1){if(e1&&e1.name==="AbortError")throw e1;backup=true;tickBase="Main map servers are busy, using the backup search";
+      var pk=await nominatimNear("parking",ctr,R,sig);await wait(1100);var cs=[];try{cs=await nominatimNear("charging_station",ctr,R+300,sig);}catch(e2){if(e2&&e2.name==="AbortError")throw e2;}
+      d={elements:pk.concat(cs)};}
+    var ocmNote="";if(ocmKey()){tickBase="Cross-checking Open Charge Map";try{var oc=await ocmNear(ctr,R+300,sig);d.elements=(d.elements||[]).concat(oc);ocmNote=" Open Charge Map added "+oc.length+" charge point record"+(oc.length===1?"":"s")+".";}catch(e3){if(e3&&e3.name==="AbortError")throw e3;ocmNote=" Open Charge Map could not be reached, so chargers come from OpenStreetMap only this time.";}}
+    var els=(d&&d.elements)||[],chargers=els.filter(function(e){return e.tags&&e.tags.amenity==="charging_station";});
+    var hosts=els.map(function(e){var k=hostKind(e.tags||{});return k?{e:e,kind:k,name:(e.tags.name||k.label)}:null;}).filter(Boolean);
+    function hostFor(e){var c=elC(e),best=null,bd=90;hosts.forEach(function(h){var d=boxDist(c,h.e);if(d<bd){bd=d;best=h;}});return best;}
+    var covered=0;function isCovered(t){return/^(multi-storey|underground|rooftop|sheds|carports|garage_boxes|garage)$/.test(t.parking||"")||!!t.building||t.location==="underground"||t.indoor==="yes"||parseFloat(t.layer)<0||(t.maxheight&&parseFloat(t.maxheight)<state.unit.clearance);}
+    var parks=els.filter(function(e){if(!e.tags||e.tags.amenity!=="parking")return false;if(isCovered(e.tags)){covered++;return false;}
+      e._host=hostFor(e);var restricted=/^(private|customers|permit|employees|delivery|residents|destination)$/.test(e.tags.access||"");
+      if(restricted&&!e._host&&!PUBRE.test(e.tags.operator||e.tags.owner||""))return false;var ar=elArea(e),cap=parseInt(e.tags.capacity,10);if(cap>0&&cap<12)return false;if(ar!=null&&ar<700)return false;return e.bounds||e.tags.name;})
+      .map(function(e){return fromOSM(e,chargers,q,e._host);}).sort(function(x,y){return dist(ctr,x)-dist(ctr,y);});
+    var withEv=parks.filter(function(x){return x.hasEv;}).slice(0,6),rest=state.evOnly?[]:parks.filter(function(x){return!x.hasEv;}).slice(0,Math.max(4,10-withEv.length)),added=0;parks.sort(function(x,y){return((y.pub?1:0)-(x.pub?1:0))||(dist(ctr,x)-dist(ctr,y));});withEv=parks.filter(function(x){return x.hasEv;}).slice(0,state.evOnly?12:6);rest=state.evOnly?[]:parks.filter(function(x){return!x.hasEv;}).slice(0,Math.max(4,12-withEv.length));
+    withEv.concat(rest).forEach(function(c){if(state.cands.some(function(k){return k.id===c.id;}))return;delete c.hasEv;state.cands.push(c);added++;});
+    if((!selected()||!visible(selected()))&&state.cands.length){var vis=sorted().filter(function(o){return visible(o.c);});state.sel=vis.length?vis[0].c.id:state.sel;}
+    tickStop();save();renderAll();addPostcodes();
+    m.textContent=parks.length?added+" car park"+(added===1?"":"s")+" added below ("+withEv.length+" with charge points mapped on site, out of "+parks.length+" open surface car parks, "+parks.filter(function(x){return x.pub;}).length+" of them public sector, and "+chargers.length+" charge points found)."+(state.evOnly&&!withEv.length&&parks.length?" None of them has a charge point mapped on site. Untick the EV-only box to see them all, or widen the radius.":"")+(covered?" "+covered+" multi-storey, underground or height-restricted car park"+(covered===1?" was":"s were")+" left out because a 40ft unit cannot be delivered into them.":"")+ocmNote+(backup?" The backup search was used, which returns at most 40 car parks, so run it again later for a fuller list.":""):"No public car parks are mapped within "+distTxt(R)+". Widen the search radius and try again.";
+  }catch(e){tickStop();m.textContent=e&&e.name==="AbortError"?"Stopped.":e&&e.name==="TimeoutError"?"The free map servers are busy and did not answer in time. Try again in a minute, or use a smaller search radius.":"The map service could not be reached. If you opened this file inside Claude's preview, download it and open it in your browser instead. Otherwise check your connection, or ask IT whether overpass-api.de is blocked.";}
+  finally{tickStop();btn.disabled=false;$("findStop").hidden=true;}
+};
+function aiErr(e){var c=e&&e.code;if(c==="not_granted"||c==="sampling_disabled"||c==="not_declared")return"Claude was not allowed for this page, so this feature is off.";if(c==="rate_limited")return"Claude usage limit reached. Try again later.";if(c==="cancelled")return"Stopped.";return"Claude could not answer just now. Try again.";}
+
+/* ---------- step 2 ---------- */
+$("addBtn").onclick=function(){
+  var n=$("cName").value.trim(),c=parseCoord($("cCoord").value),m=$("cMsg");
+  if(!c){m.className="hint bad";m.textContent="Paste the car park's coordinates, e.g. 51.5033, -0.1196.";return;}
+  m.textContent="";var id="c"+Date.now();
+  state.cands.push({id:id,name:n||"Car park "+(state.cands.length+1),lat:c.lat,lng:c.lng,survey:{}});
+  state.sel=id;$("cName").value="";$("cCoord").value="";save();renderAll();
+};
+function visible(c){if(state.pubOnly&&c.src==="osm"&&!c.pub)return false;if(c.src==="osm"&&c.guess&&(c.guess.indexOf("type")>=0&&c.survey.type&&c.survey.type!=="Surface"||c.guess.indexOf("barrier")>=0&&c.survey.barrier==="Fixed"))return false;return!(state.evOnly&&c.src==="osm"&&!(+c.survey.chargers>0));}
+async function addPostcodes(){
+  var need=state.cands.filter(function(c){return!c.pc;}).slice(0,50);if(!need.length)return;
+  try{var d=await getJSON("https://api.postcodes.io/postcodes",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({geolocations:need.map(function(c){return{longitude:c.lng,latitude:c.lat,limit:1,radius:1000};})})},12000);
+    (d.result||[]).forEach(function(r,i){if(r&&r.result&&r.result[0])need[i].pc=r.result[0].postcode;});save();renderCands();}catch(e){}
+}
+function sorted(){var s=siteC();return state.cands.map(function(c){return{c:c,d:s?dist(s,c):null,b:assess(c).B.length?1:0};}).sort(function(x,y){return(x.b-y.b)||((y.c.pub?1:0)-(x.c.pub?1:0))||((x.d==null?0:x.d)-(y.d==null?0:y.d));});}
+function candLinks(c,site){
+  var q=c.name+", "+(c.place||state.site.place||"");
+  return (c.est?A(earthQ(q),"Aerial view in Google Earth")+A(mapsQ(q),"Find on Google Maps")+A(street(c),"Street View (approximate spot)")
+               :A(earth(c,250),"Aerial view in Google Earth")+A(sat(c),"Satellite map")+A(street(c),"Street View"))+(site?A(route(c,site,"walking"),"Walking route to site"):"");
+}
+function aerial(ll,name){return'<iframe class="aerial" loading="lazy" title="Aerial view of '+esc(name)+'" src="https://maps.google.com/maps?q='+ll+'&t=k&z=18&output=embed"></iframe>';}
+function renderCands(){
+  var el=$("candList"),s=siteC();
+  if(!state.cands.length){el.innerHTML='<div class="empty">No car parks yet. Enter a town, village or part postcode in step 1 and press Find car parks near here.</div>';return;}
+  var list=sorted().filter(function(o){return visible(o.c);});
+  if(!list.length){el.innerHTML='<div class="empty">None of the car parks found has a charge point on site. Untick the EV-only box in step 1 to see them all.</div>';return;}
+  el.innerHTML=list.map(function(o,i){var c=o.c,r=assess(c),ap=(c.est||state.site.est)?"about ":"";
+    return'<article class="cand'+(c.id===state.sel?" sel":"")+'"><div class="chead"><h3>'+esc(c.name)+(i===0&&s&&!o.b?'<span class="tag near">nearest suitable</span>':"")+(c.pub?'<span class="tag pub">public sector'+(c.hostLabel?": "+esc(c.hostLabel):"")+"</span>":"")+(c.src==="osm"?'<span class="tag">from OpenStreetMap</span>':"")+'</h3><span class="cscore">'+r.score+"/100, "+esc(r.label)+"</span></div>"+
+    "<p>"+(o.d==null?"Distance appears once the site location is set.":ap+distTxt(o.d)+" "+bearing(s,c)+" of the site, "+ap+walkMin(o.d)+" min walk"+(o.d>state.site.radius?" (outside the search radius)":""))+"</p>"+
+    (c.why?"<p>"+esc(c.why)+"</p>":"")+
+    '<p class="links">'+candLinks(c,s)+"</p>"+
+    '<p class="zap"><strong>Zapmap cross-check:</strong> '+(c.pc?"nearest postcode <strong>"+esc(c.pc)+'</strong> <button class="small ghost" data-copy="'+esc(c.pc)+'">Copy</button> ':"")+A("https://www.zapmap.com/live","Open the Zapmap live map")+" and search "+(c.pc?"that postcode":"the car park name")+", then record what you find under Zapmap cross-check in the survey.</p>"+
+    '<div class="views"><div class="aerialbox" data-ll="'+c.lat+","+c.lng+'" data-name="'+esc(c.name)+'">'+aerial(c.lat+","+c.lng,c.name)+"</div>"+
+    (state.gkey?'<img class="sv" loading="lazy" alt="Street View near '+esc(c.name)+'" src="https://maps.googleapis.com/maps/api/streetview?size=640x360&location='+c.lat+","+c.lng+"&key="+encodeURIComponent(state.gkey)+'">':"")+"</div>"+
+    "<details open><summary>SWOT: "+r.S.length+" strengths, "+r.W.length+" weaknesses, "+r.O.length+" opportunities, "+r.T.length+' threats</summary><div class="swot"><div class="q s"><h4>Strengths</h4>'+ul(r.S)+'</div><div class="q w"><h4>Weaknesses</h4>'+ul(r.W)+'</div><div class="q o"><h4>Opportunities</h4>'+ul(r.O)+'</div><div class="q t"><h4>Threats</h4>'+ul(r.T)+"</div></div></details>"+
+    '<button class="small" data-sel="'+c.id+'">'+(c.id===state.sel?"Surveying this one":"Survey and refine")+'</button> <button class="small ghost" data-del="'+c.id+'">Remove</button></article>';}).join("");
+}
+$("candList").onclick=function(e){var t=e.target;if(t.dataset.copy){try{navigator.clipboard.writeText(t.dataset.copy);t.textContent="Copied";}catch(x){}return;}if(t.dataset.aerial){var bx=t.parentNode;bx.innerHTML=aerial(bx.dataset.ll,bx.dataset.name);return;}if(t.dataset.sel){state.sel=t.dataset.sel;save();renderAll();$("s3").scrollIntoView({behavior:"smooth"});}
+  if(t.dataset.del){state.cands=state.cands.filter(function(c){return c.id!==t.dataset.del;});if(state.sel===t.dataset.del)state.sel=state.cands[0]?state.cands[0].id:null;save();renderAll();}};
+function selected(){return state.cands.filter(function(c){return c.id===state.sel;})[0]||null;}
+
+/* ---------- step 3 ---------- */
+var GROUPS=[
+ {t:"Delivery and installation",f:[
+  ["type","Car park type",["Surface","Multi-storey or deck","Underground"]],
+  ["barrier","Height barrier at the entrance",["None","Removable or can be unlocked","Fixed"]],
+  ["entranceW","Narrowest entrance width (m)","num"],
+  ["approach","Approach roads suit an articulated or HIAB lorry",["Yes","Unsure","No"]],
+  ["turning","Room inside to turn and offload",["Yes","Tight","No"]],
+  ["overhead","Overhead cables, trees or lamp columns above the set-down area",["Clear","Some","Obstructed"]],
+  ["surface","Surface",["Tarmac or concrete","Block paving","Gravel or unbound","Grass or soft ground"]],
+  ["gradient","Gradient where the unit will sit",["Level","Slight fall","Noticeable slope"]]]},
+ {t:"EV charging connection",f:[
+  ["chargers","Number of charge points","num"],
+  ["kw","Highest power available (kW)","num"],
+  ["connector","Connector type",["Type 2 socket (AC)","Type 2 tethered (AC)","CCS (DC rapid)","Unknown"]],
+  ["cableRun","Distance from unit position to charge point (m)","num"],
+  ["evAccess","Charge point availability",["24 hours","Car park hours only","Restricted or members only"]],
+  ["network","Charging network or operator","text"],
+  ["zapmap","Zapmap cross-check",["Confirmed on Zapmap","On Zapmap but details differ","Not listed on Zapmap"]]]},
+ {t:"Permission and day-to-day running",f:[
+  ["owner","Who owns or runs the car park",["Local authority","NHS or other public body","Private operator","Unknown"]],
+  ["permission","Permission to site the unit",["Agreed","In discussion","Not yet asked"]],
+  ["hours","Opening hours",["Open 24 hours","Locked overnight"]],
+  ["occupancy","How full it gets",["Usually quiet","Busy at peak","Usually full"]],
+  ["accessible","Blue Badge or parent bays affected",["Not affected","Affected"]],
+  ["lighting","Lighting",["Good","Partial","None"]],
+  ["cctv","CCTV",["Yes","No","Unknown"]],
+  ["neighbours","Nearest homes",["None close","Homes within 50 m"]],
+  ["flood","Flood risk",["Low","Unknown","Known risk"]],
+  ["route","Walking route to the contract site",["Footway all the way","Partial footway","No safe walking route"]]]}
+];
+function renderSurvey(){
+  var c=selected(),el=$("surveyBody");
+  if(!c){el.innerHTML='<div class="empty">Add a car park in step 2 and press Survey to record what you can see in Google Earth and Street View, or on a site visit.</div>';return;}
+  var s=c.survey,h='<p class="lede">Surveying <strong>'+esc(c.name)+"</strong>. Leave anything you have not checked blank; it will be listed as still to check.</p><p class='links'>"+candLinks(c,siteC())+"</p>";
+  h+='<div style="max-width:28rem;margin-bottom:1rem"><label for="f_coord">'+(c.est?"Confirm this car park's coordinates (currently approximate)":"Car park coordinates")+'</label><input id="f_coord" value="'+esc(fmt(c))+'"><p class="hint" id="f_coordMsg">'+(c.est?"Find it in Google Earth, right-click to copy the coordinates and paste them here.":"")+"</p></div>";
+  GROUPS.forEach(function(g){h+="<fieldset><legend>"+esc(g.t)+'</legend><div class="grid">';
+    g.f.forEach(function(f){var id="f_"+f[0],v=s[f[0]]==null?"":s[f[0]];h+='<div><label for="'+id+'">'+esc(f[1])+"</label>";
+      if(Array.isArray(f[2]))h+='<select id="'+id+'" data-k="'+f[0]+'"><option value="">Not checked yet</option>'+f[2].map(function(o){return"<option"+(o===v?" selected":"")+">"+esc(o)+"</option>";}).join("")+"</select>";
+      else h+='<input id="'+id+'" data-k="'+f[0]+'" '+(f[2]==="num"?'type="number" min="0" step="0.1" inputmode="decimal"':'type="text"')+' value="'+esc(v)+'">';
+      if(c.guess&&c.guess.indexOf(f[0])>=0)h+='<p class="hint" id="g_'+f[0]+'">Filled in from the map. Confirm it.</p>';
+      h+="</div>";});
+    h+="</div></fieldset>";});
+  h+='<label for="f_notes">Anything else you noticed</label><textarea id="f_notes" data-k="notes" rows="2">'+esc(s.notes||"")+"</textarea>";
+  h+='<h3>How the unit sits across the bays</h3><div class="plan scroll" id="plan"></div>';
+  el.innerHTML=h;renderPlan();
+}
+$("surveyBody").addEventListener("input",function(e){var k=e.target.dataset.k,c=selected();if(!c)return;
+  if(e.target.id==="f_coord"){var p=parseCoord(e.target.value),m=$("f_coordMsg");if(p){c.lat=p.lat;c.lng=p.lng;c.est=false;m.className="hint ok";m.textContent="Saved as "+fmt(p);save();renderCands();renderSwot();}else{m.className="hint bad";m.textContent="Those coordinates could not be read.";}return;}
+  if(!k)return;if(c.guess){c.guess=c.guess.filter(function(x){return x!==k;});var gh=$("g_"+k);if(gh)gh.remove();}c.survey[k]=e.target.value;delete ai[c.id];save();renderCands();renderSwot();if(k==="cableRun")renderPlan();});
+
+function renderPlan(){
+  var el=$("plan");if(!el)return;var u=state.unit,c=selected(),run=c&&+c.survey.cableRun>0?+c.survey.cableRun:null;
+  var n=Math.ceil(u.length/u.bayW),total=n+2,S=30,pad=30,W=total*u.bayW*S+pad*2,H=u.bayD*S+120,x0=pad+u.bayW*S,y0=50;
+  var g='<svg xmlns="http://www.w3.org/2000/svg" width="'+W+'" height="'+H+'" viewBox="0 0 '+W+" "+H+'" role="img" aria-label="Plan of the unit across '+n+' parking bays"><g fill="none" stroke="var(--bay)" stroke-width="2">';
+  for(var i=0;i<=total;i++)g+='<line x1="'+(pad+i*u.bayW*S)+'" y1="'+y0+'" x2="'+(pad+i*u.bayW*S)+'" y2="'+(y0+u.bayD*S)+'"/>';
+  g+='<line x1="'+pad+'" y1="'+y0+'" x2="'+(W-pad)+'" y2="'+y0+'"/></g>';
+  var uy=y0+8;
+  g+='<rect x="'+x0+'" y="'+uy+'" width="'+u.length*S+'" height="'+u.width*S+'" fill="var(--unit)" opacity=".85" rx="3"/>';
+  g+='<text x="'+(x0+u.length*S/2)+'" y="'+(uy+u.width*S/2+6)+'" text-anchor="middle" fill="#fff" font-family="Barlow Condensed,Arial Narrow,Arial" font-size="20" font-weight="600">Oasis unit '+u.length+" m × "+u.width+" m</text>";
+  g+='<text x="'+pad+'" y="28" fill="var(--ink)" font-family="Overpass,Arial" font-size="14">Takes '+n+" bays of "+u.bayW+" m. Bay depth left in front of the unit: "+(u.bayD-u.width).toFixed(2)+" m for steps and access.</text>";
+  var cx=x0+u.length*S+ (run?Math.min(run,u.bayW*1.6)*S*0.5:u.bayW*S*0.5),cy=y0+u.bayD*S+36;
+  g+='<path d="M'+(x0+u.length*S-20)+" "+(uy+u.width*S)+" C"+(x0+u.length*S-20)+" "+cy+", "+(cx-40)+" "+cy+", "+cx+" "+cy+'" fill="none" stroke="var(--ev)" stroke-width="3" stroke-dasharray="7 5"/>';
+  g+='<rect x="'+(cx-9)+'" y="'+(cy-16)+'" width="18" height="32" rx="3" fill="var(--ev)"/>';
+  g+='<text x="'+(cx-18)+'" y="'+(cy+6)+'" text-anchor="end" fill="var(--ink)" font-family="Overpass,Arial" font-size="13">'+(run?"Cable run "+run+" m (limit "+u.maxCable+" m)":"Enter the cable run to check it against the "+u.maxCable+" m limit")+"</text></svg>";
+  el.innerHTML=g;
+}
+
+/* ---------- rules ---------- */
+function assess(c){
+  var s=c.survey||{},u=state.unit,S=[],W=[],O=[],T=[],B=[],todo=[],score=100,site=siteC(),d=site?dist(site,c):null;
+  function num(k){var v=parseFloat(s[k]);return isFinite(v)?v:null;}
+  GROUPS.forEach(function(g){g.f.forEach(function(f){if(f[0]!=="network"&&(s[f[0]]==null||s[f[0]]===""))todo.push(f[1]);});});
+  if(d!=null){var w=walkMin(d);
+    if(d<=400)S.push("Only "+distTxt(d)+" from the contract site, about "+w+" minutes on foot, so breaks and welfare visits cost little working time.");
+    else if(d<=800){S.push(distTxt(d)+" from site, about "+w+" minutes on foot: workable for a welfare base.");score-=5;}
+    else{W.push(distTxt(d)+" from site, about "+w+" minutes each way on foot. Expect lost time or a shuttle vehicle.");score-=d>1500?25:15;}
+    if(d>state.site.radius)W.push("Outside the "+distTxt(state.site.radius)+" search radius set for this contract.");}
+  if(s.type==="Surface")S.push("Open surface car park: a crane or HIAB lift has clear headroom.");
+  if(s.type&&s.type!=="Surface"){B.push(s.type+" car park: a 40ft unit cannot be delivered under a deck, and deck loading is unlikely to allow it on top.");score-=60;}
+  if(s.barrier==="None")S.push("No height barrier, so the delivery lorry can drive straight in.");
+  if(s.barrier==="Removable or can be unlocked"){W.push("Height barrier must be unlocked for delivery and collection. Get the keyholder's contact and book it in writing.");score-=6;}
+  if(s.barrier==="Fixed"){B.push("Fixed height barrier. A lorry needing "+u.clearance+" m clearance cannot enter unless the unit is lifted in from the highway.");score-=45;}
+  var ew=num("entranceW");if(ew!=null){if(ew>=u.minEntrance)S.push("Entrance is "+ew+" m wide, above the "+u.minEntrance+" m needed.");else{B.push("Entrance is "+ew+" m wide; the delivery vehicle needs "+u.minEntrance+" m.");score-=40;}}
+  if(s.approach==="Yes")S.push("Approach roads take a large lorry.");
+  if(s.approach==="Unsure"){W.push("Approach route for the lorry is unproven. Check weight limits, width restrictions and low bridges with the haulier.");score-=8;}
+  if(s.approach==="No"){B.push("Approach roads do not suit the delivery lorry.");score-=40;}
+  if(s.turning==="Yes")S.push("Space inside to turn and offload without closing the highway.");
+  if(s.turning==="Tight"){W.push("Tight manoeuvring: needs a banksman, parked cars cleared in advance and an early-morning delivery slot.");score-=8;}
+  if(s.turning==="No"){W.push("No room to turn inside. Delivery means reversing in from the road or lifting from the highway under traffic management.");T.push("A highway lift needs a road space booking or licence from the highway authority, adding cost and lead time.");score-=18;}
+  if(s.overhead==="Clear")S.push("Nothing overhead at the set-down point.");
+  if(s.overhead==="Some"){W.push("Some overhead obstructions. The lift plan must fix the crane position and slew limits.");score-=6;}
+  if(s.overhead==="Obstructed"){W.push("Overhead cables, trees or columns above the set-down area. Move the unit position or arrange pruning or isolation.");T.push("Working near overhead lines brings GS6 precautions and possible refusal by the network owner.");score-=18;}
+  if(s.surface==="Tarmac or concrete")S.push("Hard surface carries the unit on standard spreader pads.");
+  if(s.surface==="Block paving"){W.push("Block paving can rut under jack legs and outriggers. Use larger spreader plates and record its condition first.");score-=5;}
+  if(s.surface==="Gravel or unbound"||s.surface==="Grass or soft ground"){W.push(s.surface+" needs ground mats or a temporary base, and outrigger loads checked.");score-=15;}
+  if(s.gradient==="Level")S.push("Level ground, so little packing is needed.");
+  if(s.gradient==="Slight fall"){W.push("Slight fall: allow for packing and check door and step alignment.");score-=3;}
+  if(s.gradient==="Noticeable slope"){W.push("Noticeable slope: levelling a 12 m unit will need substantial packing and a stability check.");score-=12;}
+  var n=num("chargers"),kw=num("kw"),run=num("cableRun");
+  if(n===0){B.push("No charge points in this car park, so the unit cannot be powered from the EV network here.");score-=50;}
+  if(n===1){W.push("A single charge point: the unit would take the only public charger and one fault leaves the unit without power.");T.push("Charger downtime. Agree a fallback such as a battery pack or a second site.");score-=12;}
+  if(n>=2&&n<4){S.push(n+" charge points, so the public keeps access while the unit is connected.");}
+  if(n>=4){S.push(n+" charge points: using one has little effect on public charging and gives spare capacity if one fails.");}
+  if(kw!=null){if(kw>=u.minKw)S.push("Up to "+kw+" kW available, meeting the unit's "+u.minKw+" kW demand.");else{W.push("Highest output is "+kw+" kW, below the "+u.minKw+" kW the unit needs. Expect load shedding on heating and water.");score-=20;}}
+  if(s.connector&&s.connector!=="Unknown"){var ac=s.connector.indexOf("Type 2")===0,want=u.connector.indexOf("Type 2")===0;
+    if(ac===want)S.push(s.connector+" matches the unit's "+u.connector+" inlet.");else{W.push(s.connector+" does not match the unit's "+u.connector+" inlet. An approved adapter or a different charger is needed.");score-=20;}}
+  if(run!=null){if(run<=u.maxCable)S.push("Cable run of "+run+" m is inside the "+u.maxCable+" m limit.");else{W.push("Cable run of "+run+" m is over the "+u.maxCable+" m limit. Move the unit closer or agree a protected longer lead.");score-=12;}
+    if(run>3)T.push("A lead across a trafficked or walked area is a trip and damage hazard. Use cable ramps and barriers.");}
+  if(s.zapmap==="Confirmed on Zapmap")S.push("Charge points confirmed on Zapmap, so the map data agrees with the networks' own listings.");
+  if(s.zapmap==="On Zapmap but details differ"){W.push("Zapmap shows different charger details from the map data. Use the Zapmap figures and correct the survey.");score-=5;}
+  if(s.zapmap==="Not listed on Zapmap"){W.push("Zapmap does not list charge points here. Treat them as unconfirmed until seen on site: they may be private, removed or not yet live.");score-=15;}
+  if(s.evAccess==="24 hours")S.push("Charge points are live around the clock, so frost protection and drying rooms stay on overnight.");
+  if(s.evAccess==="Car park hours only"){W.push("Charge points follow car park hours. Confirm power stays on when the gates are locked.");score-=6;}
+  if(s.evAccess==="Restricted or members only"){W.push("Charge points are restricted. An account or agreement with the operator is needed before mobilising.");score-=12;}
+  if(n==null||n>0){T.push("Public charging tariffs often carry maximum stay limits and overstay fees. Agree a contract tariff with the network"+(s.network?" ("+s.network+")":"")+" before connecting for days at a time.");
+    T.push("Drivers may complain about a charging bay taken by a non-vehicle. Signage explaining the zero-diesel welfare unit helps.");
+    O.push("Running from the charge point removes the diesel generator: no fuel deliveries, less noise and a measurable carbon saving to report to the client.");}
+  if(s.owner==="Local authority"||s.owner==="NHS or other public body"){S.push("Owned by a public body, the same sector as the contract client, which shortens the route to a licence.");O.push("Ask the client to sponsor the bay suspension and licence as part of the contract, and offer this site as a template for their future works.");}
+  if(s.owner==="Private operator"){W.push("Private operator: expect a commercial licence fee per bay and their own insurance terms.");score-=6;}
+  if(s.owner==="Unknown"){W.push("Owner not identified. Nothing can be agreed until it is.");score-=6;}
+  if(c.grp==="la"||c.grp==="leis"){S.push("Sits in the grounds of a public building"+(c.host?" ("+c.host+")":"")+", so one estates team can agree the licence, the bays and the power.");O.push("If the charge point proves unsuitable, the building's own electrical supply is a fallback the landlord can authorise.");}
+  if(c.grp==="leis")T.push("Some leisure centres are run by a private operator or trust on the council's behalf. Confirm who controls the car park before relying on council approval.");
+  if(c.grp==="nhs"){W.push("Hospital and clinic car parks are under constant pressure from patients and staff, and many are run by a private operator under contract to the trust.");T.push("Blue-light and patient transport routes must stay clear at all times, which limits where a 12 m unit and its delivery lorry can go. Approach the trust's estates team first.");score-=6;}
+  if(c.grp==="gp"){W.push("GP surgery car parks are small and usually owned by the practice or NHS Property Services, not the council. Taking six bays is rarely acceptable.");score-=15;}
+  if(c.grp==="blue"){S.push("Staffed, secure emergency service site with a presence around the clock.");W.push("Charge points at emergency service stations are normally for fleet vehicles, and the yard may need security clearance to enter.");T.push("Nothing may ever obstruct appliance bays or emergency egress. Siting needs the station commander's written agreement and a delivery plan that keeps the exit clear.");score-=8;}
+  if(c.grp==="pb")S.push("Public building site, so the landowner is a public body.");
+  if(s.permission==="Agreed")S.push("Permission to site the unit is agreed.");
+  if(s.permission==="In discussion"){T.push("Permission is still in discussion and could be refused or arrive after the contract start date.");score-=5;}
+  if(s.permission==="Not yet asked"){T.push("Permission has not been asked for. Bay suspensions and licences commonly need several weeks' notice.");score-=10;}
+  if(s.hours==="Open 24 hours"){S.push("Open 24 hours, so delivery can be booked out of hours when the car park is empty.");T.push("Unrestricted access overnight raises the risk of vandalism or break-in.");}
+  if(s.hours==="Locked overnight"){S.push("Locked overnight, which protects the unit.");W.push("Delivery, collection and early starts must fit the opening hours or a keyholder arrangement.");score-=3;}
+  if(s.occupancy==="Usually quiet"){S.push("Usually quiet, so losing bays is unlikely to draw objections.");O.push("Under-used car park: the owner gains income or activity from bays that sit empty.");}
+  if(s.occupancy==="Busy at peak"){W.push("Busy at peak times. Deliver early morning and expect some pressure on the bays taken.");score-=5;}
+  if(s.occupancy==="Usually full"){W.push("Usually full. Bays will need coning off the night before delivery.");T.push("Loss of bays in a full car park may bring objections from traders, residents or councillors.");score-=12;}
+  if(s.accessible==="Affected"){W.push("Blue Badge or parent bays would be affected. Reposition the unit or provide like-for-like replacements.");score-=12;}
+  if(s.lighting==="Good")S.push("Well lit for dark mornings and evenings.");
+  if(s.lighting==="Partial"){W.push("Partial lighting. Add lighting at the unit door and steps.");score-=3;}
+  if(s.lighting==="None"){W.push("No lighting. Task lighting is needed for safe winter use.");score-=7;}
+  if(s.cctv==="Yes")S.push("Covered by CCTV.");
+  if(s.cctv==="No"){T.push("No CCTV. Consider an alarm and remove valuables overnight.");score-=4;}
+  if(s.neighbours==="Homes within 50 m"){T.push("Homes within 50 m: early starts, door noise and delivery reversing alarms may lead to complaints.");score-=5;}
+  if(s.neighbours==="None close")S.push("No homes close by, so early starts are unlikely to disturb anyone.");
+  if(s.flood==="Known risk"){T.push("Known flood risk. Check warnings, keep electrics raised and have a plan to disconnect.");score-=10;}
+  if(s.flood==="Unknown")T.push("Flood risk unchecked. Look up the location on the government flood map.");
+  if(s.route==="Footway all the way")S.push("Continuous footway between the unit and the site.");
+  if(s.route==="Partial footway"){W.push("Footway is incomplete on the route to site. Brief the workforce on the crossing points.");score-=5;}
+  if(s.route==="No safe walking route"){W.push("No safe walking route to site. A shuttle vehicle would be needed.");score-=18;}
+  O.push("A visible low-carbon welfare unit in a public car park supports the client's net zero and social value reporting.");
+  score=Math.max(0,Math.min(100,Math.round(score)));
+  var label,cls;if(B.length){label="Not viable as surveyed";cls="block";}else if(todo.length>11){label=todo.length>=22?"Not surveyed yet":"Survey incomplete";cls="";}else if(score>=75){label="Strong candidate";cls="good";}else if(score>=50){label="Workable with mitigation";cls="mid";}else{label="Weak candidate";cls="poor";}
+  return{S:S,W:B.map(function(b){return"Blocker: "+b;}).concat(W),O:O,T:T,B:B,todo:todo,score:score,label:label,cls:cls,d:d};
+}
+
+/* ---------- step 4 ---------- */
+function ul(a,extra){var x=(extra||[]).map(function(t){return'<li class="ai">'+esc(t)+"</li>";}).join("");return a.length||x?"<ul>"+a.map(function(t){return"<li>"+esc(t)+"</li>";}).join("")+x+"</ul>":'<p class="hint">Nothing recorded yet.</p>';}
+function renderSwot(){
+  var c=selected(),el=$("swotBody");
+  if(!c){el.innerHTML='<div class="empty">The SWOT builds itself as you complete the survey in step 3.</div>';return;}
+  var r=assess(c),a=ai[c.id]||{},done=GROUPS.reduce(function(t,g){return t+g.f.length;},0)-1;
+  var h='<div class="verdict '+r.cls+'"><span class="score">'+r.score+'</span><div><strong>'+esc(r.label)+"</strong>"+esc(c.name)+(r.d!=null?", "+distTxt(r.d)+" from "+esc(state.site.name||"the contract site"):"")+'<br><span class="hint">'+(done-r.todo.length)+" of "+done+" survey items checked</span></div></div>";
+  if(a.summary)h+='<p><em>'+esc(a.summary)+"</em></p>";
+  h+='<div class="swot"><div class="q s"><h4>Strengths</h4>'+ul(r.S,a.strengths)+'</div><div class="q w"><h4>Weaknesses</h4>'+ul(r.W,a.weaknesses)+'</div><div class="q o"><h4>Opportunities</h4>'+ul(r.O,a.opportunities)+'</div><div class="q t"><h4>Threats</h4>'+ul(r.T,a.threats)+"</div></div>";
+  if(a.delivery_plan&&a.delivery_plan.length)h+="<h3>Delivery and installation sequence</h3><ol>"+a.delivery_plan.map(function(t){return"<li>"+esc(t)+"</li>";}).join("")+"</ol>";
+  if(a.questions_for_owner&&a.questions_for_owner.length)h+="<h3>Questions to put to the car park owner</h3><ul>"+a.questions_for_owner.map(function(t){return"<li>"+esc(t)+"</li>";}).join("")+"</ul>";
+  if(c.est||(c.guess&&c.guess.length))h+='<div class="note">'+(c.guess&&c.guess.length?c.guess.length+" survey answers were filled in from OpenStreetMap and may be out of date. Confirm them in step 3.":"")+"</div>";
+  if(r.todo.length)h+='<div class="note"><strong>Still to check:</strong> '+esc(r.todo.join("; "))+".</div>";
+  if(a.summary)h+='<p class="hint">Points in italics were added by Claude from general UK practice. Claude has not seen this car park, so verify each one.</p>';
+  h+='<div class="row">'+(sample?'<button id="aiBtn">'+(a.summary?"Regenerate Claude's additions":"Add delivery plan and extra points with Claude")+'</button><button class="ghost" id="aiStop" hidden>Stop</button>':"")+'<button class="ghost" id="dlBtn">Download report</button>'+'<button class="ghost" id="copyBtn">Copy report text</button><span class="hint" id="aiMsg"></span></div>';
+  el.innerHTML=h;
+}
+var ctl=null;
+$("swotBody").onclick=async function(e){
+  var id=e.target.id,c=selected();if(!c)return;
+  if(id==="aiStop"&&ctl)ctl.abort();
+  if(id==="copyBtn"){var m=$("aiMsg");try{await navigator.clipboard.writeText(report(c));m.textContent="Report copied.";}catch(x){m.textContent="Copying is blocked here. Use Download report instead.";}}
+  if(id==="dlBtn"&&!downloads){var bl=new Blob([report(c)],{type:"text/markdown"}),u=URL.createObjectURL(bl),an=document.createElement("a");an.href=u;an.download="oasis-siting-"+c.name.toLowerCase().replace(/[^a-z0-9]+/g,"-").slice(0,40)+".md";document.body.appendChild(an);an.click();an.remove();setTimeout(function(){URL.revokeObjectURL(u);},2000);}
+  if(id==="dlBtn"&&downloads){try{await downloads.save({filename:"oasis-siting-"+c.name.toLowerCase().replace(/[^a-z0-9]+/g,"-").slice(0,40)+".md",data:report(c)});$("aiMsg").textContent="Report saved.";}catch(x){$("aiMsg").textContent=x&&x.code==="declined"?"Download cancelled.":"The report could not be downloaded here. Use Copy report text.";}}
+  if(id==="aiBtn"&&sample){
+    var r=assess(c),btn=e.target,had=!!ai[c.id];btn.disabled=true;$("aiStop").hidden=false;$("aiMsg").textContent="Claude is thinking. This can take up to a minute…";ctl=new AbortController();
+    var prompt="You are helping a UK site welfare provider judge whether a public car park suits a 40ft (12.2 m) Oasis welfare unit that is delivered by lorry, set down across parking bays and powered from a public EV charge point instead of a diesel generator, while the crew works on a nearby public sector contract.\n\nYou have NOT seen this location. Use only the survey data below plus general UK practice (CDM 2015, lift planning, highway and parking licences, bay suspensions, charge point tariffs, HSE welfare requirements). Do not invent facts about this specific car park. Do not repeat points already in the rule-based SWOT; add what it misses.\n\nDATA:\n"+JSON.stringify({contract:state.site.name,distance_m:r.d==null?null:Math.round(r.d),car_park:c.name,survey:c.survey,unit:state.unit,rule_based:{strengths:r.S,weaknesses:r.W,opportunities:r.O,threats:r.T,unchecked:r.todo}})+
+      '\n\nReply with only JSON: {"summary":"two sentences giving an overall view","strengths":[],"weaknesses":[],"opportunities":[],"threats":[],"delivery_plan":["6 to 9 ordered steps from permission through delivery, set-down, EV connection, commissioning and collection, tailored to the survey answers"],"questions_for_owner":["up to 6"]}. Each SWOT array has at most 3 short items and may be empty. British English.';
+    try{var d=await sample.json(prompt,{signal:ctl.signal,cache:had?false:true});
+      if(d&&typeof d==="object"){["strengths","weaknesses","opportunities","threats","delivery_plan","questions_for_owner"].forEach(function(k){d[k]=Array.isArray(d[k])?d[k].map(String):[];});d.summary=String(d.summary||"Claude's additions are shown in italics.");ai[c.id]=d;}
+      renderSwot();
+    }catch(x){btn.disabled=false;$("aiStop").hidden=true;$("aiMsg").textContent=aiErr(x);if(x&&(x.code==="not_granted"||x.code==="sampling_disabled")){sample=null;renderSwot();$("aiMsg").textContent=aiErr(x);}}
+  }
+};
+function report(c){
+  var r=assess(c),a=ai[c.id]||{},s=c.survey,L=[];
+  function sec(t,arr,ex){L.push("","## "+t);arr.concat((ex||[]).map(function(x){return x+" (Claude, general practice)";})).forEach(function(x){L.push("- "+x);});if(!arr.length&&!(ex||[]).length)L.push("- None recorded");}
+  L.push("# Oasis unit siting report: "+c.name,"","Generated "+new Date().toLocaleDateString("en-GB",{day:"numeric",month:"long",year:"numeric"}),"",
+    "- Contract site: "+(state.site.name||"not named")+(siteC()?" ("+fmt(siteC())+")":""),"- Public sector site: "+(c.pub?"yes"+(c.host?", at "+c.host+" ("+c.hostLabel+")":""):"not identified as one"),"- Car park coordinates: "+fmt(c)+(c.est?" (approximate, suggested by Claude, unconfirmed)":""),"- Google Earth: "+earth(c,250),
+    "- Distance from site: "+(r.d==null?"site not set":distTxt(r.d)+", about "+walkMin(r.d)+" min walk"),"- Suitability: "+r.score+"/100, "+r.label);
+  if(a.summary)L.push("",a.summary);
+  sec("Strengths",r.S,a.strengths);sec("Weaknesses",r.W,a.weaknesses);sec("Opportunities",r.O,a.opportunities);sec("Threats",r.T,a.threats);
+  if(a.delivery_plan&&a.delivery_plan.length){L.push("","## Delivery and installation sequence");a.delivery_plan.forEach(function(x,i){L.push((i+1)+". "+x);});}
+  if(a.questions_for_owner&&a.questions_for_owner.length){L.push("","## Questions for the car park owner");a.questions_for_owner.forEach(function(x){L.push("- "+x);});}
+  L.push("","## Survey record");GROUPS.forEach(function(g){g.f.forEach(function(f){L.push("- "+f[1]+": "+(s[f[0]]||"not checked"));});});if(s.notes)L.push("- Notes: "+s.notes);
+  L.push("","## Unit assumptions","- Unit "+state.unit.length+" m × "+state.unit.width+" m; lorry clearance "+state.unit.clearance+" m; minimum entrance "+state.unit.minEntrance+" m","- Inlet "+state.unit.connector+"; demand "+state.unit.minKw+" kW; cable limit "+state.unit.maxCable+" m");
+  return L.join("\n");
+}
+
+/* ---------- step 5 ---------- */
+var UF=[["length","Unit length (m)"],["width","Unit width (m)"],["clearance","Height clearance the delivery lorry needs (m)"],["minEntrance","Minimum entrance width (m)"],["minKw","Power the unit needs (kW)"],["maxCable","Longest connection lead (m)"],["bayW","Parking bay width (m)"],["bayD","Parking bay depth (m)"]];
+function renderUnit(){
+  $("unitForm").innerHTML=UF.map(function(f){return'<div><label for="u_'+f[0]+'">'+f[1]+'</label><input id="u_'+f[0]+'" data-u="'+f[0]+'" type="number" step="0.01" min="0" value="'+state.unit[f[0]]+'"></div>';}).join("")+
+  '<div><label for="u_connector">Unit power inlet</label><select id="u_connector" data-u="connector"><option'+(state.unit.connector==="Type 2 (AC)"?" selected":"")+">Type 2 (AC)</option><option"+(state.unit.connector==="CCS (DC)"?" selected":"")+">CCS (DC)</option></select></div>";
+}
+$("unitForm").addEventListener("input",function(e){var k=e.target.dataset.u;if(!k)return;var v=k==="connector"?e.target.value:parseFloat(e.target.value);if(k!=="connector"&&!(v>0))return;state.unit[k]=v;save();renderCands();renderSwot();renderPlan();});
+$("resetBtn").onclick=function(){if(!confirm("Clear the site, all car parks and surveys saved on this device?"))return;try{localStorage.removeItem(KEY);}catch(e){}location.reload();};
+
+if(state.evOnly==null)state.evOnly=true;$("evOnly").checked=state.evOnly;$("evOnly").onchange=function(){state.evOnly=this.checked;save();renderAll();};
+$("pubOnly").checked=!!state.pubOnly;$("pubOnly").onchange=function(){state.pubOnly=this.checked;save();renderAll();};
+$("ocmKey").value=state.ocmKey||"";$("ocmKey").onchange=function(){state.ocmKey=this.value.trim();save();};
+$("gkey").value=state.gkey||"";$("gkey").onchange=function(){state.gkey=this.value.trim();save();renderCands();};
+function renderAll(){renderSite();renderCands();renderSurvey();renderSwot();}
+renderUnit();renderAll();
+if(window.claude&&window.claude.use){
+  window.claude.use("sample").then(function(s){sample=s||null;renderSwot();});
+  window.claude.use("downloads").then(function(d){downloads=d||null;renderSwot();});
+}
+})();
+</script>
+</body>
+</html>
